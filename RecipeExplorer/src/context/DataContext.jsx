@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 /* eslint-disable no-unused-vars */
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 
 export const DataContext = createContext();
@@ -10,6 +10,21 @@ export const DataProvider = ({ children }) => {
   const [page, setPage] = useState(1);
   const [apiWorking, setapiWorking] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [Filter, setFilter] = useState([]);
+  const [currFilterOption, setFilterOption] = useState("All");
+  const [cookList, setcookList] = useState(() => {
+    const data = localStorage.getItem("cookList");
+    if (data) {
+      return JSON.parse(data);
+    }
+    return [];
+  });
+
+  function saveRecipe(recipe) {
+    setcookList([...cookList, recipe]);
+    localStorage.setItem("cookList", JSON.stringify([...cookList, recipe]));
+  }
+
   const RawData = async () => {
     try {
       const response = await axios.get(`https://dummyjson.com/recipes`);
@@ -18,7 +33,6 @@ export const DataProvider = ({ children }) => {
       return [];
     }
   };
-
   const getRecipe = async () => {
     try {
       const response = await axios.get(
@@ -58,6 +72,13 @@ export const DataProvider = ({ children }) => {
     RawData,
     searchTerm,
     setSearchTerm,
+    Filter,
+    setFilter,
+    currFilterOption,
+    setFilterOption,
+    cookList,
+    setcookList,
+    saveRecipe,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

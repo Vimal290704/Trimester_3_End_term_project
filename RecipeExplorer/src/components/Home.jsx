@@ -7,8 +7,19 @@ import RecipeCard2 from "./RecipeCard2";
 import FilterOption from "./FilterOption";
 
 const Home = () => {
-  const { apiWorking, RawData, page, getRecipe, searchTerm } =
-    useContext(DataContext);
+  const {
+    apiWorking,
+    RawData,
+    page,
+    getRecipe,
+    searchTerm,
+    Filter,
+    setFilter,
+    currFilterOption,
+  } = useContext(DataContext);
+
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [recipe, setRecipe] = useState(() => {
     const data = localStorage.getItem("Recipe");
     if (data) {
@@ -16,8 +27,39 @@ const Home = () => {
     }
     return [];
   });
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cuisines = new Set();
+    const difficulties = new Set();
+    const mealTypes = new Set();
+
+    recipe.forEach((item) => {
+      cuisines.add(item.cuisine);
+      difficulties.add(item.difficulty);
+      if (Array.isArray(item.mealType)) {
+        item.mealType.forEach((type) => mealTypes.add(type));
+      } else if (item.mealType) {
+        mealTypes.add(item.mealType);
+      }
+    });
+
+    const filterOptions = [
+      "All",
+      ...Array.from(cuisines),
+      ...Array.from(difficulties),
+      ...Array.from(mealTypes),
+    ];
+
+    const sortedNewOptions = [...filterOptions].sort();
+    const sortedCurrentOptions = [...Filter].sort();
+
+    const filterString = JSON.stringify(sortedNewOptions);
+    const currentFilterString = JSON.stringify(sortedCurrentOptions);
+
+    if (filterString !== currentFilterString) {
+      setFilter(filterOptions);
+    }
+  }, [recipe, setFilter]);
 
   useEffect(() => {
     setLoading(true);
@@ -52,11 +94,13 @@ const Home = () => {
       });
   };
 
-
-
   return (
-
     <div className="container mx-auto px-4 py-6">
+      <div>
+        {Filter.map((option, index) => {
+          return <FilterOption key={index} option={option} />;
+        })}
+      </div>
       {error && (
         <div
           className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6"
@@ -77,6 +121,25 @@ const Home = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {recipe
+            .filter((recipeObj) => {
+              if (currFilterOption === "All") {
+                return true;
+              } else {
+                if (
+                  recipeObj.cuisine === currFilterOption ||
+                  recipeObj.difficulty === currFilterOption
+                ) {
+                  return true;
+                }
+
+                if (Array.isArray(recipeObj.mealType)) {
+                  return recipeObj.mealType.includes(currFilterOption);
+                } else if (recipeObj.mealType) {
+                  return recipeObj.mealType === currFilterOption;
+                }
+                return false;
+              }
+            })
             .filter((recipeObj) =>
               recipeObj.name.toLowerCase().includes(searchTerm.toLowerCase())
             )

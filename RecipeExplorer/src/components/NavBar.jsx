@@ -5,10 +5,10 @@ import { DataContext } from "../context/DataContext";
 const NavBar = () => {
   const { setSearchTerm } = useContext(DataContext);
   const [inputValue, setInputValue] = useState("");
-  const handleSearchChange = useCallback((e) => {
+  const handleSearchChange = useCallback((e) => { 
     setInputValue(e.target.value);
   }, []);
-  useEffect(() => {
+  useEffect(() => { // for debounce
     const timeoutId = setTimeout(() => {
       setSearchTerm(inputValue);
     }, 300);
