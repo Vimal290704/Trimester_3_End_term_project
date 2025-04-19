@@ -9,8 +9,7 @@ export const DataProvider = ({ children }) => {
   const apiId = "12c380b51734461da74b8571d473d899";
   const [page, setPage] = useState(1);
   const [apiWorking, setapiWorking] = useState(true);
-
-
+  const [searchTerm, setSearchTerm] = useState("");
   const RawData = async () => {
     try {
       const response = await axios.get(`https://dummyjson.com/recipes`);
@@ -57,6 +56,8 @@ export const DataProvider = ({ children }) => {
     page,
     apiWorking,
     RawData,
+    searchTerm,
+    setSearchTerm,
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
