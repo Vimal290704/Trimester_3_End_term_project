@@ -2,11 +2,17 @@ import React, { useContext, useState, useEffect } from "react";
 import { DataContext } from "../context/DataContext";
 
 const CookingList = () => {
-  const { cookList, removeFromCookList } = useContext(DataContext);
+  const { cookList, setcookList } = useContext(DataContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [sortOption, setSortOption] = useState("name");
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+
+  function removeFromCookList(id) {
+    const updatedList = cookList.filter((recipe) => recipe.id !== id);
+    setcookList(updatedList);
+    localStorage.setItem("cookList", JSON.stringify(updatedList));
+  }
   useEffect(() => {
     let result = [...cookList];
     if (searchTerm) {
@@ -37,7 +43,6 @@ const CookingList = () => {
           return 0;
       }
     });
-
     setFilteredRecipes(result);
   }, [cookList, searchTerm, sortOption]);
 
