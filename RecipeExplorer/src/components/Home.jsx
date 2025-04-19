@@ -4,24 +4,58 @@ import { DataContext } from "../context/DataContext";
 import Pagination from "./Pagination";
 
 const Home = () => {
-  const { page, getRecipe } = useContext(DataContext);
-  const [recipe, setRecipe] = useState(null);
+  const { apiWorking, RawData, page, getRecipe } = useContext(DataContext);
+  const [recipe, setRecipe] = useState(() => {
+    const data = localStorage.getItem("Recipe");
+    if (data) {
+      return JSON.parse(data);
+    }
+    return [];
+  });
   const [error, setError] = useState(null);
-
   useEffect(() => {
-    getRecipe()
+    if (apiWorking) {
+      getRecipe()
+        .then((data) => {
+          setRecipe(data);
+          localStorage.setItem("Recipe", JSON.stringify(data));
+          setError(null);
+        })
+        .catch((err) => {
+          setError(err.message || "An error occurred with the API");
+          fetchRawData();
+        });
+    } else {
+      fetchRawData();
+    }
+  }, [page, apiWorking, getRecipe]);
+
+  const fetchRawData = () => {
+    RawData()
       .then((data) => {
-        setRecipe(JSON.stringify(data));
-        console.log(JSON.stringify(data));
+        setRecipe(data);
+        setError(null);
+        localStorage.setItem("Recipe", JSON.stringify(data));
       })
       .catch((err) => {
-        setError(err);
+        setError(err.message || "An error occurred with RawData");
       });
-  }, [getRecipe, page]);
+  };
 
   return (
     <div>
-      {recipe && <div>{recipe}</div>}
+      {error && <div className="error">{error}</div>}
+      <div>
+        {recipe ? (
+          typeof recipe === "object" ? (
+            <pre>{JSON.stringify(recipe, null, 2)}</pre>
+          ) : (
+            <div>{recipe}</div>
+          )
+        ) : (
+          <div>Loading...</div>
+        )}
+      </div>
       <Pagination />
     </div>
   );
