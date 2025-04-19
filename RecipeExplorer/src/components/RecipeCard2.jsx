@@ -3,22 +3,8 @@ import { DataContext } from "../context/DataContext";
 
 function RecipeCard1({ RecipeObj }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { cookList, setcookList, removeFromCookList } = useContext(DataContext);
-
-  function saveRecipe(recipe, e) {
-    if (e) e.stopPropagation();
-    if (doesContain(recipe)) {
-      return;
-    }
-    const updatedList = [...cookList, recipe];
-    setcookList(updatedList);
-    localStorage.setItem("cookList", JSON.stringify(updatedList));
-  }
-
-  function doesContain(recipe) {
-    return cookList.some((item) => item.id === recipe.id);
-  }
-
+  const { removeFromCookList, saveRecipe, doesContain } =
+    useContext(DataContext);
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -52,10 +38,13 @@ function RecipeCard1({ RecipeObj }) {
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 h-full flex flex-col transform hover:-translate-y-1">
         <div className="relative">
           {doesContain(RecipeObj) ? (
-            <button className="absolute top-3 left-3 bg-green-500 hover:bg-green-600 text-white rounded-full px-4 py-1.5 text-sm font-bold flex items-center shadow-md transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 z-10">
+            <button
+              className="absolute top-4 left-4 bg-red-500 hover:bg-red-600 text-white rounded-full px-5 py-2 text-sm font-bold flex items-center shadow-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-3 focus:ring-red-400 focus:ring-offset-2 z-10 backdrop-filter backdrop-blur-sm bg-opacity-90"
+              onClick={() => removeFromCookList(RecipeObj.id)}
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-1"
+                className="h-5 w-5 mr-1.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -64,22 +53,21 @@ function RecipeCard1({ RecipeObj }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M5 13l4 4L19 7"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                 />
               </svg>
-              ADDED
+              REMOVE
             </button>
           ) : (
             <button
               onClick={(e) => {
-                e.stopPropagation();
                 saveRecipe(RecipeObj, e);
               }}
-              className="absolute top-3 left-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full px-4 py-1.5 text-sm font-bold flex items-center shadow-md transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 z-10"
+              className="absolute top-4 left-4 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full px-5 py-2 text-sm font-bold flex items-center shadow-lg transition-all duration-300 transform hover:scale-105 hover:-rotate-1 focus:outline-none focus:ring-3 focus:ring-emerald-400 focus:ring-offset-2 z-10 backdrop-filter backdrop-blur-sm bg-opacity-90"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 mr-1"
+                className="h-5 w-5 mr-1.5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -88,10 +76,10 @@ function RecipeCard1({ RecipeObj }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M12 4v16m8-8H4"
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
                 />
               </svg>
-              ADD
+              SAVE
             </button>
           )}
           <img
@@ -478,10 +466,8 @@ function RecipeCard1({ RecipeObj }) {
               <div>
                 {doesContain(RecipeObj) ? (
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Remove Recipe button clicked in modal");
-                      removeFromCookList(RecipeObj, e);
+                    onClick={() => {
+                      removeFromCookList(RecipeObj.id);
                     }}
                     className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-md mr-2"
                   >
@@ -490,8 +476,6 @@ function RecipeCard1({ RecipeObj }) {
                 ) : (
                   <button
                     onClick={(e) => {
-                      e.stopPropagation();
-                      console.log("Save Recipe button clicked in modal");
                       saveRecipe(RecipeObj, e);
                     }}
                     className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md mr-2"
