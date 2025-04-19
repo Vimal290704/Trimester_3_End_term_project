@@ -59,6 +59,12 @@ export const DataProvider = ({ children }) => {
     setPage((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
+  function removeFromCookList(id) {
+      const updatedList = cookList.filter((recipe) => recipe.id !== id);
+      setcookList(updatedList);
+      localStorage.setItem("cookList", JSON.stringify(updatedList));
+    }
+
   const value = {
     getRecipe,
     setPage,
@@ -74,7 +80,8 @@ export const DataProvider = ({ children }) => {
     currFilterOption,
     setFilterOption,
     cookList,
-    setcookList
+    setcookList,
+    removeFromCookList
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

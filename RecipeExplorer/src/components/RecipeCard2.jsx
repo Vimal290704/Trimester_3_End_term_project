@@ -3,7 +3,7 @@ import { DataContext } from "../context/DataContext";
 
 function RecipeCard1({ RecipeObj }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { cookList, setcookList } = useContext(DataContext);
+  const { cookList, setcookList, removeFromCookList } = useContext(DataContext);
 
   function saveRecipe(recipe, e) {
     if (e) e.stopPropagation();
@@ -476,16 +476,29 @@ function RecipeCard1({ RecipeObj }) {
                 Close
               </button>
               <div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log("Save Recipe button clicked in modal");
-                    saveRecipe(RecipeObj, e);
-                  }}
-                  className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md mr-2"
-                >
-                  Save Recipe
-                </button>
+                {doesContain(RecipeObj) ? (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Remove Recipe button clicked in modal");
+                      removeFromCookList(RecipeObj, e);
+                    }}
+                    className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-md mr-2"
+                  >
+                    Remove Recipe
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Save Recipe button clicked in modal");
+                      saveRecipe(RecipeObj, e);
+                    }}
+                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md mr-2"
+                  >
+                    Save Recipe
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -1,18 +1,15 @@
 import React, { useContext, useState, useEffect } from "react";
 import { DataContext } from "../context/DataContext";
+import { useNavigate } from "react-router-dom";
 
 const CookingList = () => {
-  const { cookList, setcookList } = useContext(DataContext);
+  const navigate = useNavigate();
+  const { cookList, removeFromCookList } = useContext(DataContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredRecipes, setFilteredRecipes] = useState([]);
   const [sortOption, setSortOption] = useState("name");
   const [selectedRecipe, setSelectedRecipe] = useState(null);
 
-  function removeFromCookList(id) {
-    const updatedList = cookList.filter((recipe) => recipe.id !== id);
-    setcookList(updatedList);
-    localStorage.setItem("cookList", JSON.stringify(updatedList));
-  }
   useEffect(() => {
     let result = [...cookList];
     if (searchTerm) {
@@ -113,7 +110,10 @@ const CookingList = () => {
             <p className="text-gray-500 mb-6">
               Add some delicious recipes to get started!
             </p>
-            <button className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md">
+            <button
+              className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md"
+              onClick={() => navigate("/")}
+            >
               Browse Recipes
             </button>
           </div>
@@ -373,7 +373,6 @@ const CookingList = () => {
         >
           <div className="modal-overlay absolute inset-0"></div>
           <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl my-8 mx-4 overflow-hidden flex flex-col relative z-10 animate-fadeIn">
-            {/* Modal Header */}
             <div className="relative">
               <img
                 className="w-full h-72 object-cover"
@@ -640,9 +639,6 @@ const CookingList = () => {
                   className="px-6 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 shadow-md mr-2"
                 >
                   Remove Recipe
-                </button>
-                <button className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-md">
-                  Print Recipe
                 </button>
               </div>
             </div>
