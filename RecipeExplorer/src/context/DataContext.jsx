@@ -18,19 +18,19 @@ const api = axios.create({
 });
 
 export const DataProvider = ({ children }) => {
-  const apiId = "12c380b51734461da74b8571d473d899";
-  const [page, setPage] = useState(1);
-  const [apiWorking, setapiWorking] = useState(true);
+  const [apiWorking, setApiWorking] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [Filter, setFilter] = useState([]);
   const [currFilterOption, setFilterOption] = useState("All");
-  const [cookList, setcookList] = useState(() => {
+  const [error, setError] = useState(null);
+  const [cookList, setCookList] = useState(() => {
     const data = localStorage.getItem("cookList");
     if (data) {
       try {
         return JSON.parse(data);
       } catch (e) {
         console.error("Failed to parse cookList from localStorage:", e);
+        setError(e.message || "Error parsing cookList");
         return [];
       }
     }
@@ -38,52 +38,33 @@ export const DataProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    localStorage.setItem("cookList", JSON.stringify(cookList));
+    try {
+      localStorage.setItem("cookList", JSON.stringify(cookList));
+    } catch (e) {
+      console.error("Failed to save cookList to localStorage:", e);
+      setError(e.message || "Error saving cookList");
+    }
   }, [cookList]);
 
   const doesContain = useCallback(
     (recipe) => {
-      return cookList.some((item) => item.id === recipe.id);
+      if (!recipe || !recipe.id) return false;
+      return cookList.some((item) => item && item.id === recipe.id);
     },
     [cookList]
   );
+
   const RawData = useCallback(async () => {
     try {
       const response = await api.get(`https://dummyjson.com/recipes`);
+      setApiWorking(true);
       return response.data.recipes;
     } catch (error) {
       console.error("Error fetching recipes:", error);
+      setApiWorking(false);
+      setError(error.message || "Error fetching recipes");
       return [];
     }
-  }, []);
-
-  const getRecipe = useCallback(async () => {
-    try {
-      const response = await api.get(
-        `hhttps://api.spoonacular.com/recipes/complexSearch`,
-        {
-          params: {
-            query: "chicken",
-            number: 30,
-            offset: (page - 1) * 30,
-            apiKey: apiId,
-          },
-        }
-      );
-      setapiWorking(true);
-      return response.data.results;
-    } catch (error) {
-      console.error("Error fetching spoonacular recipes:", error);
-      setapiWorking(false);
-      return [];
-    }
-  }, [page, apiId]);
-  const nextPage = useCallback(() => {
-    setPage((prev) => prev + 1);
-  }, []);
-
-  const prevPage = useCallback(() => {
-    setPage((prev) => (prev > 1 ? prev - 1 : 1));
   }, []);
 
   const toastOptions = useMemo(
@@ -106,10 +87,15 @@ export const DataProvider = ({ children }) => {
         event.preventDefault();
       }
 
+      if (!recipe) {
+        setError("Cannot save null recipe");
+        return;
+      }
+
       if (!doesContain(recipe)) {
-        setcookList((prev) => [...prev, recipe]);
+        setCookList((prev) => [...prev, recipe]);
         toast.success(
-          `${recipe.name} added to your cooking list!`,
+          `${recipe.name || "Recipe"} added to your cooking list!`,
           toastOptions
         );
       }
@@ -119,10 +105,17 @@ export const DataProvider = ({ children }) => {
 
   const removeFromCookList = useCallback(
     (recipeId) => {
-      const recipe = cookList.find((item) => item.id === recipeId);
+      if (!recipeId) {
+        setError("Cannot remove recipe without ID");
+        return;
+      }
+
+      const recipe = cookList.find((item) => item && item.id === recipeId);
       if (recipe) {
-        setcookList((prev) => prev.filter((item) => item.id !== recipeId));
-        toast.info(`${recipe.name} removed from your list`, {
+        setCookList((prev) =>
+          prev.filter((item) => item && item.id !== recipeId)
+        );
+        toast.info(`${recipe.name || "Recipe"} removed from your list`, {
           ...toastOptions,
           icon: "🗑️",
         });
@@ -131,14 +124,29 @@ export const DataProvider = ({ children }) => {
     [cookList, toastOptions]
   );
 
+  const showError = useCallback(() => {
+    if (!apiWorking) {
+      toast.error("API is not working", toastOptions);
+    }
+    if (error) {
+      toast.error(error, toastOptions);
+    }
+  }, [apiWorking, error, toastOptions]);
+
+  useEffect(() => {
+    if (error) {
+      showError();
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error, showError]);
+
   const value = useMemo(
     () => ({
-      getRecipe,
-      setPage,
-      nextPage,
-      prevPage,
-      page,
       apiWorking,
+      setApiWorking,
       RawData,
       searchTerm,
       setSearchTerm,
@@ -147,14 +155,15 @@ export const DataProvider = ({ children }) => {
       currFilterOption,
       setFilterOption,
       cookList,
-      setcookList,
+      setCookList,
       removeFromCookList,
       doesContain,
       saveRecipe,
+      showError,
+      error,
+      setError,
     }),
     [
-      getRecipe,
-      page,
       apiWorking,
       RawData,
       searchTerm,
@@ -164,10 +173,12 @@ export const DataProvider = ({ children }) => {
       removeFromCookList,
       doesContain,
       saveRecipe,
-      nextPage,
-      prevPage,
+      showError,
+      error,
     ]
   );
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 };
+
+export default DataProvider;

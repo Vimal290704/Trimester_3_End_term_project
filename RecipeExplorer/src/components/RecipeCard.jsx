@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { DataContext } from "../context/DataContext";
 
-function RecipeCard1({ RecipeObj }) {
+function RecipeCard({ RecipeObj }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { removeFromCookList, saveRecipe, doesContain } =
     useContext(DataContext);
@@ -492,4 +492,4 @@ function RecipeCard1({ RecipeObj }) {
   );
 }
 
-export default RecipeCard1;
+export default RecipeCard;
