@@ -3,15 +3,20 @@ import { DataContext } from "../context/DataContext";
 
 function RecipeCard1({ RecipeObj }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { saveRecipe, cookList } = useContext(DataContext);
+  const { cookList, setcookList } = useContext(DataContext);
+
+  function saveRecipe(recipe, e) {
+    if (e) e.stopPropagation();
+    if (doesContain(recipe)) {
+      return;
+    }
+    const updatedList = [...cookList, recipe];
+    setcookList(updatedList);
+    localStorage.setItem("cookList", JSON.stringify(updatedList));
+  }
 
   function doesContain(recipe) {
-    for (let i = 0; i < cookList.length; i++) {
-      if (cookList[i].id === recipe.id) {
-        return true;
-      }
-    }
-    return false;
+    return cookList.some((item) => item.id === recipe.id);
   }
 
   const openModal = () => {
@@ -47,7 +52,7 @@ function RecipeCard1({ RecipeObj }) {
       <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all duration-300 h-full flex flex-col transform hover:-translate-y-1">
         <div className="relative">
           {doesContain(RecipeObj) ? (
-            <button className="absolute top-3 left-3 bg-green-500 hover:bg-green-600 text-white rounded-full px-4 py-1.5 text-sm font-bold flex items-center shadow-md transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+            <button className="absolute top-3 left-3 bg-green-500 hover:bg-green-600 text-white rounded-full px-4 py-1.5 text-sm font-bold flex items-center shadow-md transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 z-10">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 mr-1"
@@ -66,8 +71,11 @@ function RecipeCard1({ RecipeObj }) {
             </button>
           ) : (
             <button
-              onClick={() => saveRecipe(RecipeObj)}
-              className="absolute top-3 left-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full px-4 py-1.5 text-sm font-bold flex items-center shadow-md transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                saveRecipe(RecipeObj, e);
+              }}
+              className="absolute top-3 left-3 bg-yellow-400 hover:bg-yellow-500 text-gray-900 rounded-full px-4 py-1.5 text-sm font-bold flex items-center shadow-md transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 z-10"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -91,7 +99,7 @@ function RecipeCard1({ RecipeObj }) {
             src={RecipeObj.image || "/api/placeholder/400/300"}
             alt={RecipeObj.name}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent pointer-events-none"></div>
           <div className="absolute top-3 right-3">
             <div className="bg-yellow-400 text-gray-900 rounded-full px-3 py-1 text-sm font-bold flex items-center shadow-md">
               <span className="mr-1">★</span>
@@ -469,8 +477,10 @@ function RecipeCard1({ RecipeObj }) {
               </button>
               <div>
                 <button
-                  onClick={() => {
-                    saveRecipe(RecipeObj);
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    console.log("Save Recipe button clicked in modal");
+                    saveRecipe(RecipeObj, e);
                   }}
                   className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md mr-2"
                 >

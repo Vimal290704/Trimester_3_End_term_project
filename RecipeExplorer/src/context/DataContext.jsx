@@ -20,10 +20,7 @@ export const DataProvider = ({ children }) => {
     return [];
   });
 
-  function saveRecipe(recipe) {
-    setcookList([...cookList, recipe]);
-    localStorage.setItem("cookList", JSON.stringify([...cookList, recipe]));
-  }
+  
 
   const RawData = async () => {
     try {
@@ -77,8 +74,7 @@ export const DataProvider = ({ children }) => {
     currFilterOption,
     setFilterOption,
     cookList,
-    setcookList,
-    saveRecipe,
+    setcookList
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
