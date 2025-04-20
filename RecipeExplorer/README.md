@@ -2,7 +2,7 @@
 
 RecipeExplorer is a React application that allows users to discover, search, and save recipes for their cooking adventures. The app fetches recipe data from an API and provides a user-friendly interface to explore and manage your favorite recipes.
 
-![RecipeExplorer Screenshot](/src/assets/image.png)
+![RecipeExplorer Screenshot](./src/assets/image.png)
 
 ## 🍳 Features
 
