@@ -27,7 +27,7 @@ RecipeExplorer is a React application that allows users to discover, search, and
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/recipe-explorer.git
+   git clone https://github.com/Vimal290704/Trimester_3_End_term_project
    cd RecipeExplorer
    ```
 
