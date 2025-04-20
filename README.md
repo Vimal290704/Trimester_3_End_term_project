@@ -260,23 +260,6 @@ npm run preview
 
 The app is configured to be easily deployed to Netlify. Connect your repository and the deployment process will be handled automatically.
 
-## 📱 Responsive Design
-
-RecipeExplorer is designed to be fully responsive and work seamlessly across:
-
-- Desktop computers
-- Tablets
-- Mobile phones
-
-## 🔜 Future Enhancements
-
-- User authentication system
-- Recipe rating functionality
-- Personal recipe creation
-- Social sharing features
-- Recipe reviews and comments
-- Advanced filtering options
-
 ## 🐛 Troubleshooting
 
 ### Common Issues
