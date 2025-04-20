@@ -4,6 +4,8 @@ RecipeExplorer is a React application that allows users to discover, search, and
 
 ![RecipeExplorer Screenshot](./src/assets/image.png)
 
+![Link Demo](https://recipeexplorer2907.netlify.app/)
+
 ## 🍳 Features
 
 - **Recipe Discovery**: Browse through a variety of recipes fetched from an external API
